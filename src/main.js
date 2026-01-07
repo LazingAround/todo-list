@@ -10,8 +10,12 @@ function deleteItem(item) {
   const element = document.getElementById(item);
   const parent = element.parentElement
   console.log(item)
+  const find = todos.findIndex((card) => card.id = element.id)
+  todos.splice(find, 1)
+  console.log(todos)
   element.remove()
   updateContainer(parent)
+  savedUpdate()
 }
 const drag = document.getElementById('card');
 
@@ -40,10 +44,10 @@ document.getElementById('info-receive').addEventListener('submit', function (eve
   del.id = `delete card${todos.length}`
   del.className = 'delete'
   del.textContent = "X"
-  del.value = `card card${todos.length}`
+  del.value = `card${todos.length}`
   del.onclick = () => deleteItem(del.value)
   box.className = 'card'
-  box.id = `card card${todos.length}`
+  box.id = `card${todos.length}`
   name.textContent = data["name"];
   var container = document.getElementById('Pending')
   container.appendChild(box)
@@ -110,6 +114,12 @@ document.getElementById('info-receive').addEventListener('submit', function (eve
   const children = container.querySelectorAll('.card')
   ball.style.width = `${children.length * 10 + 10}px`
   ball.style.height = `${children.length * 10 + 10}px`
+  data.id = box.id
+  data.progress = box.parentNode.id
+  var prio = document.getElementById('priority ' + box.id)
+  console.log(prio.value)
+  data.priority = '1'
+  savedUpdate()
 });
 function timeUpdate(date, info) {
   var repeat = 3000
@@ -122,7 +132,6 @@ function timeUpdate(date, info) {
     date.className = 'date expired'
   }
   if (difference < 60000) {
-    console.log(difference)
     date.textContent = `Due in ${Math.round(difference / 1000)}s`
     repeat = 1000
   }
@@ -147,7 +156,12 @@ function timeUpdate(date, info) {
 
 }
 function changeOrder(box, event) {
+  const find = todos.findIndex(card => card.id === box.id)
+  console.log(box.id)
+  todos[find].priority = event.target.value
   box.style.order = event.target.value
+  console.log(todos)
+  savedUpdate()
 }
 function updateContainer(box) {
   console.log(box)
@@ -161,9 +175,14 @@ function updateContainer(box) {
     ball.style.width = `10px`
     ball.style.height = `10px`
   }
+  savedUpdate()
 }
 function changeContainer(box, event) {
+  console.log(box.id)
+  const find = todos.findIndex(card => card.id === box.id)
+  todos[find].progress = event.target.value
   const selectedValue = event.target.value
+  console.log(todos)
   const newBox = document.getElementById(selectedValue)
   const oldBox = box.parentElement
   newBox.appendChild(box)
@@ -184,6 +203,7 @@ function changeContainer(box, event) {
     oldball.style.width = '10px'
     oldball.style.height = '10px'
   }
+  savedUpdate()
 }
 const world = document.getElementById('world');
 const gravity = 0.1;
@@ -311,3 +331,96 @@ function animate() {
 }
 
 animate();
+function savedUpdate() {
+  localStorage.setItem('data', JSON.stringify(todos));
+}
+
+const storedTodos = JSON.parse(localStorage.getItem('data'));
+console.log(storedTodos);
+
+storedTodos.forEach((data) => {
+  const box = document.createElement('div');
+  const name = document.createElement('h2')
+  const desc = document.createElement('p')
+  const date = document.createElement('p')
+  const del = document.createElement('button')
+  const progress = document.createElement('select')
+  const priority = document.createElement('select')
+  del.id = `delete ${data.id}`
+  del.className = 'delete'
+  del.textContent = "X"
+  del.value = data.id
+  del.onclick = () => deleteItem(del.value)
+  box.className = 'card'
+  box.id = data.id
+  name.textContent = data["name"];
+  var container = document.getElementById(data.progress)
+  container.appendChild(box)
+  box.appendChild(name)
+  box.appendChild(del)
+  if (data["description"]) {
+    desc.textContent = data["description"]
+    box.appendChild(desc)
+  }
+  progress.id = `status-select ` + data.id
+  progress.className = `status-select`
+  //lable.id = 'status-select'
+  const v1 = document.createElement('option')
+  const v2 = document.createElement('option')
+  const v3 = document.createElement('option')
+  const v4 = document.createElement('option')
+  v1.value = 'Pending'
+  v2.value = 'Ongoing'
+  v3.value = 'Completed'
+  v4.value = 'Cancelled'
+  v1.textContent = '🟡 Pending'
+  v2.textContent = '🔵 Ongoing'
+  v3.textContent = '🟢 Completed'
+  v4.textContent = '🔴 Cancelled'
+  //box.appendChild(lable)
+  box.appendChild(progress)
+  progress.appendChild(v1)
+  progress.appendChild(v2)
+  progress.appendChild(v3)
+  progress.appendChild(v4)
+  progress.value = data.progress
+  priority.id = 'priority ' + data.id
+  const high = document.createElement('option')
+  const middle = document.createElement('option')
+  const low = document.createElement('option')
+  box.appendChild(document.createElement('br'))
+  high.value = '1'
+  middle.value = '2'
+  low.value = '3'
+  high.textContent = 'High ^'
+  middle.textContent = 'Middle ='
+  low.textContent = 'Low ⌄'
+  box.appendChild(priority)
+  priority.appendChild(high)
+  priority.appendChild(middle)
+  priority.appendChild(low)
+  priority.value = data.priority
+  box.style.order = data.priority
+  if (data["dueDate"]) {
+    date.textContent = data["dueDate"]
+    date.id = 'date card${todos.length}'
+    var due = new Date(data['dueDate'])
+    var now = new Date()
+    if (due > now) {
+      date.className = 'date not-expired'
+    } else {
+      date.className = 'date expired'
+    }
+    timeUpdate(date, data['dueDate'])
+    box.appendChild(date)
+
+  }
+  progress.addEventListener('change', (event) => changeContainer(box, event))
+  priority.addEventListener('change', (event) => changeOrder(box, event))
+  const ball = document.getElementById(`${data.progress}-Ball`)
+  const children = container.querySelectorAll('.card')
+  ball.style.width = `${children.length * 10 + 10}px`
+  ball.style.height = `${children.length * 10 + 10}px`
+
+  todos.push(data)
+});

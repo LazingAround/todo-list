@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>todo-list</title>
+</head>
+
+<body id="world">
+  <div id="Ball" class="big ball"></div>
+  <div id="container" class="flex">
+    <div id="Pending" class="sub">
+      <div id="Pending-Ball" class="ball yellow"></div>
+    </div>
+    <div id="Ongoing" class="sub">
+      <div id="Ongoing-Ball" class="ball blue"></div>
+    </div>
+    <div id="Completed" class="sub">
+      <div id="Completed-Ball" class="ball green"></div>
+    </div>
+    <div id="Cancelled" class="sub">
+      <div id="Cancelled-Ball" class="ball red"></div>
+    </div>
+
+  </div>
+
+
+  <div id="app">
+    <form id="info-receive">
+      <label>Name</label><br>
+      <input name="name" required><br>
+      <label>Description</label><br>
+      <textarea name="description" rows="5"></textarea><br>
+      <!--<label>Progression</label>
+      <input name="progression" value='true' type="checkbox"><br>-->
+      <label>Due date (optional)</label><br>
+      <input name="dueDate" type="date"><br>
+      <input type="submit">
+    </form><br>
+  </div>
+  <div id="floor"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

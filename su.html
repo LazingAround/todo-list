@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // The Bouncing Box
+        const box = {
+            x: 50, y: 50, size: 40,
+            dx: 4, dy: 4, color: '#3498db'
+        };
+
+        // Static Obstacle
+        const obstacle = {
+            x: canvas.width / 2 - 50,
+            y: canvas.height / 2 - 50,
+            width: 100, height: 100, color: '#e74c3c'
+        };
+
+        function update() {
+            // Move the box
+            box.x += box.dx;
+            box.y += box.dy;
+
+            // Wall Collisions
+            if (box.x + box.size > canvas.width || box.x < 0) box.dx *= -1;
+            if (box.y + box.size > canvas.height || box.y < 0) box.dy *= -1;
+
+            // Interaction with Obstacle (AABB Collision Detection)
+            if (box.x < obstacle.x + obstacle.width &&
+                box.x + box.size > obstacle.x &&
+                box.y < obstacle.y + obstacle.height &&
+                box.y + box.size > obstacle.y) {
+
+                // Reverse direction and change color on hit
+                box.dx *= -1;
+                box.dy *= -1;
+                box.color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+            }
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Obstacle
+            ctx.fillStyle = obstacle.color;
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+
+            // Draw Bouncing Box
+            ctx.fillStyle = box.color;
+            ctx.fillRect(box.x, box.y, box.size, box.size);
+        }
+
+        update();
+    </script>
+</body>
+
+</html>

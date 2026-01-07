@@ -93,10 +93,20 @@ h1 {
   position: absolute;
   right: 10px;
   bottom: 5px;
-  font-size: 8px;
+  font-size: 10px;
   color: gray;
 
 }
+
+.expired {
+  color: red;
+  font-size: 10px
+}
+
+.not-expired {
+  color: gray;
+}
+
 
 .delete {
   position: absolute;

@@ -93,7 +93,14 @@ document.getElementById('info-receive').addEventListener('submit', function (eve
   if (data["dueDate"]) {
     date.textContent = data["dueDate"]
     date.id = 'date card${todos.length}'
-    date.className = 'date'
+    var due = new Date(data['dueDate'])
+    var now = new Date()
+    if (due > now) {
+      date.className = 'date not-expired'
+    } else {
+      date.className = 'date expired'
+    }
+    timeUpdate(date, data['dueDate'])
     box.appendChild(date)
 
   }
@@ -104,7 +111,41 @@ document.getElementById('info-receive').addEventListener('submit', function (eve
   ball.style.width = `${children.length * 10 + 10}px`
   ball.style.height = `${children.length * 10 + 10}px`
 });
+function timeUpdate(date, info) {
+  var repeat = 3000
+  var due = new Date(info)
+  var now = new Date()
+  var difference = due - now
+  if (due > now) {
+    date.className = 'date not-expired'
+  } else {
+    date.className = 'date expired'
+  }
+  if (difference < 60000) {
+    console.log(difference)
+    date.textContent = `Due in ${Math.round(difference / 1000)}s`
+    repeat = 1000
+  }
+  else if (difference < 3600000) {
+    date.textContent = `Due in ${Math.round(difference / 60000)}m`
+    repeat = 3000
 
+  }
+  else if (difference < 3600000 * 24) {
+    date.textContent = `Due in ${Math.round(difference / 3600000)}hr`
+    repeat = 3000
+  }
+  else if (difference < 3600000 * 24 * 7) {
+    date.textContent = `Due in ${Math.round(difference / 3600000 / 24)} day`
+    repeat = 3000
+  } else {
+    var txt = due.toLocaleDateString('en-AU')
+    date.textContent = `Due on ${txt}`
+
+  }
+  setTimeout(timeUpdate, repeat, date, info)
+
+}
 function changeOrder(box, event) {
   box.style.order = event.target.value
 }

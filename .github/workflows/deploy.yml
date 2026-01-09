@@ -31,18 +31,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'npm'
+          # CHANGED: Use yarn for caching
+          cache: 'yarn'
       - name: Install dependencies
-        run: npm ci
+        # CHANGED: Use yarn install (frozen-lockfile ensures it matches your yarn.lock)
+        run: yarn install --frozen-lockfile
       - name: Build
-        run: npm run build
+        # CHANGED: Use yarn build
+        run: yarn build
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           # Upload dist folder
           path: './dist'
